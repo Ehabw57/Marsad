@@ -1,0 +1,32 @@
+{
+  "name": "marsad",
+  "version": "1.0.0",
+  "description": "simple websocket application that mesures students understanding live",
+  "main": "server.js",
+  "dependencies": {
+    "uuid": "^13.0.0",
+    "ws": "^8.19.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ehabw57/Marsad.git"
+  },
+  "keywords": [
+    "sockets",
+    "education",
+    "live"
+  ],
+  "author": "Ehabw57",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ehabw57/Marsad/issues"
+  },
+  "homepage": "https://github.com/Ehabw57/Marsad#readme",
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  }
+}

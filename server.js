@@ -8,6 +8,8 @@ const store = {};
 
 dotenv.config();
 
+const serverURL = process.env.SERVERURL || "http://localhost:8080";
+
 const server = http.createServer((req, res) => {
   const reqPath = path.join(
     __dirname,
@@ -37,18 +39,8 @@ const server = http.createServer((req, res) => {
       js: "application/javascript",
     };
 
-    if(! process.env.SERVERURL) {
-      console.warn("Warning: SERVERURL is not defined in environment variables.");
-      process.env.SERVERURL = "http://localhost:8080";
-    }
-
     if (req.url === "/" || req.url === "/index.html")
-      data = data
-        .toString()
-        .replace(
-          /__SERVER_URL__/g,
-          process.env.SERVERURL,
-        );
+      data = data.toString().replace(/__SERVER_URL__/g, process.env.SERVERURL);
 
     res.setHeader("Content-Type", mimeTypes[ext] || "application/octet-stream");
     res.writeHead(200);
@@ -91,11 +83,12 @@ wss.on("connection", (ws, req) => {
   ws.on("message", (message) => {
     if (!message) return;
     store[ws.id] = message.toString();
-    console.log(typeof message, message.toString());
     broadcastUnderstanding();
   });
 
   ws.on("close", () => {
+    const numberOfSessions = Array.from(wss.clients).filter((client) => client.id === ws.id).length;
+    if (numberOfSessions) return;
     delete store[ws.id];
     console.log(`Client disconnected: ${ws.id}`);
     broadcastUnderstanding();
@@ -104,9 +97,7 @@ wss.on("connection", (ws, req) => {
 
 server.listen(8080, () => {
   console.log(
-    `WebSocket server is running on ${process.env.SERVERURL.replace("http", "ws")}`,
+    `WebSocket server is running on ${serverURL.replace("http", "ws")}`,
   );
-  console.log(
-    `server is running on ${process.env.SERVERURL}`,
-  );
+  console.log(`server is running on ${serverURL}`);
 });

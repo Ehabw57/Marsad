@@ -39,6 +39,11 @@ const server = http.createServer((req, res) => {
       js: "application/javascript",
     };
 
+    if(! process.env.SERVERURL) {
+      console.warn("Warning: SERVERURL is not defined in environment variables.");
+      process.env.SERVERURL = "http://localhost:8080";
+    }
+
     if (req.url === "/" || req.url === "/index.html")
       data = data.toString().replace(/__SERVER_URL__/g, process.env.SERVERURL);
 

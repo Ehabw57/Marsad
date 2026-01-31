@@ -12,9 +12,9 @@
   --color-surface: #242938;
   
   /* Status Colors */
-  /* --color-success: #4ade80;
-  --color-warning: #fbbf24;
-  --color-error: #f87171; */
+  --color-success-dark: #0d3f1d;
+  --color-warning-dark: #46350a;
+  --color-error-dark: #470f0f;
   --color-error: #ef4444;
   --color-warning: #f59e0b;
   --color-success: #22c55e;
@@ -61,6 +61,7 @@
 
 /* Text Utilities */
 .text-primary { color: var(--color-text-primary); }
+.text-success { color: var(--color-success); }
 .text-secondary { color: var(--color-text-secondary); }
 .text-tertiary { color: var(--color-text-tertiary); }
 

@@ -22,15 +22,15 @@ body {
 /* Navbar Styles */
 .navbar {
   width: 100%;
-  padding: var(--spacing-sm) var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
   background-color: var(--color-surface);
   border-bottom: 2px solid var(--color-border);
   gap: var(--spacing-md);
 }
 
 .logo {
-  width: 35px;
-  height: 35px;
+  width: 30px;
+  height: 30px;
 }
 
 .brand-name {
@@ -114,12 +114,29 @@ section {
 }
 
 .interact {
-  border: none;
+  cursor: pointer;
+  border: 1px solid transparent;
   padding: var(--spacing-md) var(--spacing-md);
+}
+.interact:hover {
+  svg {
+    transform: scale(1.15);
+    transition: transform 0.3s ease;
+  }
+}
+.interact.green:hover {
+  background-color: var(--color-success-dark);
+}
+
+.interact.yellow:hover {
+  background-color: var(--color-warning-dark);
+}
+.interact.red:hover {
+  background-color: var(--color-error-dark);
 }
 
 .button-container {
-  gap: var(--spacing-md);
+  gap: var(--spacing-sm);
 }
 
 .footer {
@@ -140,10 +157,10 @@ section {
 }
 
 .footer-links {
-  min-width: 130px;
+  min-width: 110px;
   display: flex;
   justify-content: center;
-  gap: 0;
+  gap: var(--spacing-lg);
   align-items: center;
   flex-wrap: wrap;
 }
@@ -152,7 +169,6 @@ section {
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
-  padding: var(--spacing-sm) var(--spacing-md);
   border-radius: var(--radius-md);
   text-decoration: none;
   transition: all 0.3s ease;
@@ -214,6 +230,9 @@ section {
 
   section {
     gap: 100px;
+  }
+  .footer-links {
+    min-width: 350px;
   }
   .footer-link span {
     display: inline;

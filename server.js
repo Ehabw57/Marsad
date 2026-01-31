@@ -36,11 +36,14 @@ const server = http.createServer((req, res) => {
     const mimeTypes = {
       html: "text/html",
       css: "text/css",
+      svg: "image/svg+xml",
       js: "application/javascript",
     };
 
-    if(! process.env.SERVERURL) {
-      console.warn("Warning: SERVERURL is not defined in environment variables.");
+    if (!process.env.SERVERURL) {
+      console.warn(
+        "Warning: SERVERURL is not defined in environment variables.",
+      );
       process.env.SERVERURL = "http://localhost:8080";
     }
 
@@ -58,9 +61,9 @@ const wss = new Websocket.Server({ server });
 function calculateUnderstanding() {
   let result = { count: 0, red: 0, yellow: 0, green: 0 };
   Object.values(store).forEach((item) => {
-    if (item === "green") result.green++;
-    if (item === "red") result.red++;
-    if (item === "yellow") result.yellow++;
+    if (item.state === "green") result.green++;
+    if (item.state === "red") result.red++;
+    if (item.state === "yellow") result.yellow++;
     result.count++;
   });
   return result;
@@ -76,27 +79,34 @@ function broadcastUnderstanding() {
 }
 
 wss.on("connection", (ws, req) => {
-  const clientId = req.headers.cookie.split("=")[1];
+  const cookie = req.headers.cookie.split(";")
+  const clientId = cookie ? cookie.find((c) => c.trim().startsWith("client-id=")).split("=")[1] : uuid.v4();
   console.log("New client connected:", clientId);
   ws.id = clientId;
   if (!store[clientId]) {
-    store[clientId] = "green";
+    store[clientId] = { state: "green", numberOfClients: 1 };
     broadcastUnderstanding();
+  } else {
+    store[clientId].numberOfClients += 1;
+
+    ws.send(JSON.stringify(calculateUnderstanding()));
   }
-  ws.send(JSON.stringify(calculateUnderstanding()));
 
   ws.on("message", (message) => {
     if (!message) return;
-    store[ws.id] = message.toString();
+    store[ws.id].state = message.toString();
     broadcastUnderstanding();
   });
 
   ws.on("close", () => {
-    const numberOfSessions = Array.from(wss.clients).filter((client) => client.id === ws.id).length;
-    if (numberOfSessions) return;
-    delete store[ws.id];
-    console.log(`Client disconnected: ${ws.id}`);
-    broadcastUnderstanding();
+    const numberOfClients = store[ws.id].numberOfClients - 1;
+    if (numberOfClients === 0) {
+      delete store[ws.id];
+      broadcastUnderstanding();
+    } else {
+      store[ws.id].numberOfClients = numberOfClients;
+      console.log(`Client instance disconnected: ${ws.id} remaining instances: ${numberOfClients}`);
+    }
   });
 });
 

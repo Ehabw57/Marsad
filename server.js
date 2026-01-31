@@ -13,6 +13,17 @@ const server = http.createServer((req, res) => {
     __dirname,
     req.url === "/" ? "index.html" : req.url,
   );
+
+  if (!req.headers.cookie || !req.headers.cookie.includes("client-id")) {
+    const cookie = [
+      `client-id=${uuid.v4()}`,
+      "HttpOnly",
+      "Max-Age=31536000",
+    ].join("; ");
+
+    res.setHeader("Set-Cookie", cookie);
+  }
+
   fs.readFile(reqPath, (err, data) => {
     if (err) {
       res.writeHead(404);
@@ -26,12 +37,17 @@ const server = http.createServer((req, res) => {
       js: "application/javascript",
     };
 
+    if(! process.env.SERVERURL) {
+      console.warn("Warning: SERVERURL is not defined in environment variables.");
+      process.env.SERVERURL = "http://localhost:8080";
+    }
+
     if (req.url === "/" || req.url === "/index.html")
       data = data
         .toString()
         .replace(
           /__SERVER_URL__/g,
-          process.env.SERVERURL || "http://localhost:8080",
+          process.env.SERVERURL,
         );
 
     res.setHeader("Content-Type", mimeTypes[ext] || "application/octet-stream");
@@ -62,11 +78,15 @@ function broadcastUnderstanding() {
   });
 }
 
-wss.on("connection", (ws) => {
-  ws.id = uuid.v4();
-  store[ws.id] = "green";
-  console.log(`New client connected: ${ws.id}`);
-  broadcastUnderstanding();
+wss.on("connection", (ws, req) => {
+  const clientId = req.headers.cookie.split("=")[1];
+  console.log("New client connected:", clientId);
+  ws.id = clientId;
+  if (!store[clientId]) {
+    store[clientId] = "green";
+    broadcastUnderstanding();
+  }
+  ws.send(JSON.stringify(calculateUnderstanding()));
 
   ws.on("message", (message) => {
     if (!message) return;
@@ -83,6 +103,10 @@ wss.on("connection", (ws) => {
 });
 
 server.listen(8080, () => {
-  console.log("WebSocket server is running on ws://localhost:8080");
-  console.log("server is running on http://localhost:8080");
+  console.log(
+    `WebSocket server is running on ${process.env.SERVERURL.replace("http", "ws")}`,
+  );
+  console.log(
+    `server is running on ${process.env.SERVERURL}`,
+  );
 });

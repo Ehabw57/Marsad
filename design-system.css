@@ -12,12 +12,12 @@
   --color-surface: #242938;
   
   /* Status Colors */
-  --color-success: #4ade80;
+  /* --color-success: #4ade80;
   --color-warning: #fbbf24;
-  --color-error: #f87171;
-  /* --color-error-dark: #ef4444;
-  --color-warning-dark: #f59e0b;
-  --color-success-dark: #22c55e; */
+  --color-error: #f87171; */
+  --color-error: #ef4444;
+  --color-warning: #f59e0b;
+  --color-success: #22c55e;
   
   /* Text Colors */
   --color-text-primary: #f8fafc;
@@ -76,6 +76,18 @@
 .font-medium { font-weight: var(--font-weight-medium); }
 .font-semibold { font-weight: var(--font-weight-semibold); }
 .font-bold { font-weight: var(--font-weight-bold); }
+
+/* Background Utilities */
+.bg-primary { background-color: var(--color-background); }
+.bg-surface { background-color: var(--color-surface); }
+.bg-success { background-color: var(--color-success); }
+.bg-warning { background-color: var(--color-warning); }
+.bg-error { background-color: var(--color-error); }
+
+/* Fill Utilities */
+.fill-success { fill: var(--color-success); }
+.fill-warning { fill: var(--color-warning); }
+.fill-error { fill: var(--color-error); }
 
 /* Spacing Utilities */
 .mt-sm { margin-top: var(--spacing-sm); }

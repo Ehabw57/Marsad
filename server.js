@@ -1,12 +1,50 @@
+const http = require("http");
+const fs = require("fs");
+const path = require("path");
 const Websocket = require("ws");
+const dotenv = require("dotenv");
 const uuid = require("uuid");
 const store = {};
 
-const wss = new Websocket.Server({ port: 8080 });
+dotenv.config();
+
+const server = http.createServer((req, res) => {
+  const reqPath = path.join(
+    __dirname,
+    req.url === "/" ? "index.html" : req.url,
+  );
+  fs.readFile(reqPath, (err, data) => {
+    if (err) {
+      res.writeHead(404);
+      res.end("Not Found");
+      return;
+    }
+    const ext = reqPath.split(".").pop();
+    const mimeTypes = {
+      html: "text/html",
+      css: "text/css",
+      js: "application/javascript",
+    };
+
+    if (req.url === "/" || req.url === "/index.html")
+      data = data
+        .toString()
+        .replace(
+          /__SERVER_URL__/g,
+          process.env.SERVERURL || "http://localhost:8080",
+        );
+
+    res.setHeader("Content-Type", mimeTypes[ext] || "application/octet-stream");
+    res.writeHead(200);
+    res.end(data);
+  });
+});
+
+const wss = new Websocket.Server({ server });
 
 function calculateUnderstanding() {
   let result = { count: 0, red: 0, yellow: 0, green: 0 };
-    Object.values(store).forEach((item) => {
+  Object.values(store).forEach((item) => {
     if (item === "green") result.green++;
     if (item === "red") result.red++;
     if (item === "yellow") result.yellow++;
@@ -44,4 +82,7 @@ wss.on("connection", (ws) => {
   });
 });
 
-console.log("WebSocket server is running on ws://localhost:8080");
+server.listen(8080, () => {
+  console.log("WebSocket server is running on ws://localhost:8080");
+  console.log("server is running on http://localhost:8080");
+});

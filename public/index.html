@@ -92,12 +92,24 @@
     <main class="flex items-center">
       <div class="chart-border flex items-center justify-center">
         <div class="chart-container flex flex-col">
-          <div class="bar none flex items-center justify-center">
+          <div
+            id="no-data-bar"
+            class="bar none flex items-center justify-center"
+          >
             لا توجد بيانات
           </div>
-          <div class="bar bg-error flex items-center justify-center"></div>
-          <div class="bar bg-warning flex items-center justify-center"></div>
-          <div class="bar bg-success flex items-center justify-center"></div>
+          <div
+            id="red-bar"
+            class="bar bg-error flex items-center justify-center"
+          ></div>
+          <div
+            id="yellow-bar"
+            class="bar bg-warning flex items-center justify-center"
+          ></div>
+          <div
+            id="green-bar"
+            class="bar bg-success flex items-center justify-center"
+          ></div>
         </div>
       </div>
       <aside class="flex flex-col">
@@ -285,10 +297,10 @@
         </nav>
       </div>
     </footer>
+    <script>
+      window.SERVER_URL = "__SERVER_URL__";
+    </script>
+    <script type="module" src="./scripts/socket.js"></script>
   </body>
-  <script>
-    window.SERVER_URL = "__SERVER_URL__";
-  </script>
   <!-- <script src="./scripts/test.js"></script> -->
-  <script src="./scripts/socket.js"></script>
 </html>

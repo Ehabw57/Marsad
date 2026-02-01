@@ -75,7 +75,7 @@ main {
   height: 0px;
 }
 
-.none {
+#no-data-bar {
   height: 100%;
   font-size: 0.8rem;
 }

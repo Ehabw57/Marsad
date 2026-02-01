@@ -45,8 +45,8 @@
     <meta name="format-detection" content="telephone=no" />
     <meta name="robots" content="index, follow" />
 
-    <link rel="stylesheet" href="design-system.css" />
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="./styles/design-system.css" />
+    <link rel="stylesheet" href="./styles/style.css" />
     <link
       href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet"
@@ -150,7 +150,7 @@
         <div class="button-container flex flex-col items-center">
           <button
             class="interact bg-surface rounded-xl green"
-            onclick="socket.send('green')"
+            onclick="sendEvent('green')"
           >
             <svg
               class="fill-success"
@@ -170,7 +170,7 @@
         <div class="button-container flex flex-col items-center">
           <button
             class="interact bg-surface rounded-xl yellow"
-            onclick="socket.send('yellow')"
+            onclick="sendEvent('yellow')"
           >
             <svg
               class="fill-warning"
@@ -189,7 +189,7 @@
         <div class="button-container flex flex-col items-center">
           <button
             class="interact bg-surface rounded-xl red"
-            onclick="socket.send('red')"
+            onclick="sendEvent('red')"
           >
             <svg
               class="fill-error"
@@ -289,50 +289,6 @@
   <script>
     window.SERVER_URL = "__SERVER_URL__";
   </script>
-  <!-- <script src="test.js"> </script> -->
-  <script>
-    console.log(
-      `Connecting to WebSocket server${window.SERVER_URL || "ws://localhost:8080"}`,
-    );
-    const socket = new WebSocket(window.SERVER_URL || "ws://localhost:8080");
-    socket.onopen = () => {
-      console.log("WebSocket connection established");
-    };
-
-    socket.onerror = (error) => {
-      console.error("WebSocket error:", error);
-    };
-
-    socket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      const greenPresent = (data.green / data.count) * 100;
-      const yellowPresent = (data.yellow / data.count) * 100;
-      const redPresent = (data.red / data.count) * 100;
-      const bars = document.querySelectorAll(".bar");
-      bars.forEach((bar) => {
-        bar.style.height = "0";
-        bar.textContent = "";
-      });
-      if (!greenPresent && !yellowPresent && !redPresent) {
-        bars[0].style.height = `100%`;
-        bars[0].textContent = `لاتوجد بيانات`;
-        return;
-      }
-      if (greenPresent) {
-        bars[3].style.height = `${greenPresent}%`;
-        bars[3].textContent = `${Math.floor(greenPresent)}%`;
-      }
-      if (yellowPresent) {
-        bars[2].style.height = `${yellowPresent}%`;
-        bars[2].textContent = `${Math.floor(yellowPresent)}%`;
-      }
-      if (redPresent) {
-        bars[1].style.height = `${redPresent}%`;
-        bars[1].textContent = `${Math.floor(redPresent)}%`;
-      }
-
-      const studentCount = document.querySelector(".student-count strong");
-      studentCount.textContent = data.count;
-    };
-  </script>
+  <!-- <script src="./scripts/test.js"></script> -->
+  <script src="./scripts/socket.js"></script>
 </html>

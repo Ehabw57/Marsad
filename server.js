@@ -12,7 +12,7 @@ const serverURL = process.env.SERVERURL || "http://localhost:8080";
 
 const server = http.createServer((req, res) => {
   const reqPath = path.join(
-    __dirname,
+    __dirname + "/public",
     req.url === "/" ? "index.html" : req.url,
   );
 
@@ -79,8 +79,10 @@ function broadcastUnderstanding() {
 }
 
 wss.on("connection", (ws, req) => {
-  const cookie = req.headers.cookie.split(";")
-  const clientId = cookie ? cookie.find((c) => c.trim().startsWith("client-id=")).split("=")[1] : uuid.v4();
+  const cookie = req.headers.cookie.split(";");
+  const clientId = cookie
+    ? cookie.find((c) => c.trim().startsWith("client-id=")).split("=")[1]
+    : uuid.v4();
   console.log("New client connected:", clientId);
   ws.id = clientId;
   if (!store[clientId]) {
@@ -94,6 +96,10 @@ wss.on("connection", (ws, req) => {
 
   ws.on("message", (message) => {
     if (!message) return;
+    if (message.toString() == "ping") {
+      ws.send("pong");
+      return;
+    }
     store[ws.id].state = message.toString();
     broadcastUnderstanding();
   });
@@ -105,7 +111,9 @@ wss.on("connection", (ws, req) => {
       broadcastUnderstanding();
     } else {
       store[ws.id].numberOfClients = numberOfClients;
-      console.log(`Client instance disconnected: ${ws.id} remaining instances: ${numberOfClients}`);
+      console.log(
+        `Client instance disconnected: ${ws.id} remaining instances: ${numberOfClients}`,
+      );
     }
   });
 });

@@ -9,9 +9,17 @@ const yellowBar = document.getElementById("yellow-bar");
 const redBar = document.getElementById("red-bar");
 const noDataBar = document.getElementById("no-data-bar");
 const bars = [noDataBar, redBar, yellowBar, greenBar];
+const studentCount = document.querySelector(".student-count strong");
+const buttons = document.querySelectorAll(".interact");
 
 window.sendEvent = function (event) {
-  if (socket && socket.readyState === WebSocket.OPEN) socket.send(event);
+  if (socket && socket.readyState === WebSocket.OPEN) {
+    socket.send(event);
+    buttons.forEach(button => button.disabled = true);
+    setTimeout(() => {
+      buttons.forEach(button => button.disabled = false);
+    }, 2000);
+  }
 };
 
 function connect() {
@@ -38,7 +46,7 @@ function connect() {
     const yellowPresent = (data.yellow / data.count) * 100;
     const redPresent = (data.red / data.count) * 100;
 
-    if (!greenPresent && !yellowPresent && !redPresent) {
+    if (data.count === 0) {
       bars.forEach((bar) => {
         if (bar !== noDataBar) {
           bar.textContent = "";
@@ -47,6 +55,7 @@ function connect() {
       });
       noDataBar.style.height = `100%`;
       noDataBar.textContent = `لاتوجد بيانات`;
+      studentCount.textContent = 0;
       return;
     }
 
@@ -73,7 +82,6 @@ function connect() {
       suffix: "%",
     }).start();
 
-    const studentCount = document.querySelector(".student-count strong");
     studentCount.textContent = data.count;
   };
   socket.onclose = () => {

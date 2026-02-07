@@ -61,10 +61,18 @@ const wss = new Websocket.Server({ server });
 function calculateUnderstanding() {
   let result = { count: 0, red: 0, yellow: 0, green: 0 };
   Object.values(store).forEach((item) => {
-    if (item.state === "green") result.green++;
-    if (item.state === "red") result.red++;
-    if (item.state === "yellow") result.yellow++;
-    result.count++;
+    if (item.state === "green") {
+      result.green++;
+      result.count++;
+    }
+    if (item.state === "red") {
+      result.red++;
+      result.count++;
+    }
+    if (item.state === "yellow") {
+      result.yellow++;
+      result.count++;
+    }
   });
   return result;
 }
@@ -79,7 +87,7 @@ function broadcastUnderstanding() {
 }
 
 wss.on("connection", (ws, req) => {
-  const cookie = req.headers.cookie.split(";");
+  const cookie = req.headers.cookie?.split(";");
   const clientId = cookie
     ? cookie.find((c) => c.trim().startsWith("client-id=")).split("=")[1]
     : uuid.v4();
@@ -100,6 +108,7 @@ wss.on("connection", (ws, req) => {
       ws.send("pong");
       return;
     }
+    if (store[ws.id]?.state == message.toString()) return;
     store[ws.id].state = message.toString();
     broadcastUnderstanding();
   });
